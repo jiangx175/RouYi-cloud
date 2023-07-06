@@ -223,4 +223,21 @@ spring:
 - 参考ruoyi官方文档：服务网关->限流配置
 - 测试成功，频繁请求返回如下：
 
-<img src="RuoYi-Cloud笔记.assets/image-20230706152556404.png" alt="image-20230706152556404" style="zoom:67%;" />
+<img src="RuoYi-Cloud笔记.assets/image-20230706152556404.png" alt="image-20230706152556404" style="zoom: 50%;" />
+
+### 5. 跨域配置
+
+- **通常情况下不会出现跨域问题：不会出现跨域（开发环境默认通过proxy代理的方式，同理部署到生产也需要配置nginx代理）**
+
+  - 开发环境proxy代理方式：
+
+  <img src="RuoYi-Cloud笔记.assets/image-20230706155233459.png" alt="image-20230706155233459" style="zoom: 80%;" />
+
+- 模拟跨域问题：修改登录请求url(完整的路由地址就不会走上述的代理)
+
+<img src="RuoYi-Cloud笔记.assets/image-20230706155524004.png" alt="image-20230706155524004" style="zoom:67%;" />
+
+- 调用登录接口，出现跨域问题：
+
+![image-20230706160129469](RuoYi-Cloud笔记.assets/image-20230706160129469.png)
+
