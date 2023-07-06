@@ -241,3 +241,41 @@ spring:
 
 ![image-20230706160129469](RuoYi-Cloud笔记.assets/image-20230706160129469.png)
 
+### 6. 黑白名单配置
+
+- 启动网关和system微服务，直接通过网关访问system微服务接口，返回结果如下：
+
+![image-20230706165756479](RuoYi-Cloud笔记.assets/image-20230706165756479.png)
+
+- 修改网关配置，将system相关接口加入白名单中：
+
+```yaml
+  # 不校验白名单
+  ignore:
+    whites:
+      - /system/**
+```
+
+- 再次请求该接口，访问成功：
+
+![image-20230706170007453](RuoYi-Cloud笔记.assets/image-20230706170007453.png)
+
+- 再修改网关配置，将system/config相关接口加入黑名单中
+
+```yaml
+        # 系统模块
+        - id: ruoyi-system
+          uri: lb://ruoyi-system
+          predicates:
+            - Path=/system/**
+          filters:
+            - StripPrefix=1
+            - name: BlackListUrlFilter
+              args:
+                blacklistUrl:
+                - /config
+```
+
+- 再次请求该接口：
+
+![image-20230706170831769](RuoYi-Cloud笔记.assets/image-20230706170831769.png)
