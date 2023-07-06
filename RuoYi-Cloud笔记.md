@@ -218,3 +218,9 @@ spring:
 
   <img src="RuoYi-Cloud笔记.assets/image-20230706150621468.png" alt="image-20230706150621468" style="zoom:67%;" />
 
+### 4. 网关限流配置
+
+- 参考ruoyi官方文档：服务网关->限流配置
+- 测试成功，频繁请求返回如下：
+
+<img src="RuoYi-Cloud笔记.assets/image-20230706152556404.png" alt="image-20230706152556404" style="zoom:67%;" />

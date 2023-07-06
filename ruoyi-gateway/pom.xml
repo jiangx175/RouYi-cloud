@@ -88,6 +88,12 @@
             <version>${swagger.fox.version}</version>
         </dependency>
 
+        <!-- spring data redis reactive 依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis-reactive</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
