@@ -3,20 +3,27 @@ server:
 
 spring:
   application:
-    name: ruoyi-gateway
+    name: test-gateway
   cloud:
+    nacos:
+      discovery:
+        # 服务注册地址
+        server-addr: 127.0.0.1:8848
     gateway:
       routes:
         # 系统模块
         - id: ruoyi-system
           # 将/system开头的请求都转发至localhost:9201(系统模块接口)中
-          uri: http://localhost:9201/
+          # 1.http地址配置方式
+          # uri: http://localhost:9201/
+          # 2.注册中心配置方式
+          uri: lb://ruoyi-system
           predicates:
             - Path=/system/**
             # 匹配日期时间之后发生的请求
-            - After=2023-07-06T10:23:00.000+08:00[Asia/Shanghai]
+            # - After=2023-07-06T10:23:00.000+08:00[Asia/Shanghai]
             # 匹配具有指定名称的请求头，\d+值匹配正则表达式
-            - Header=X-Request-Id, \d+
+            # - Header=X-Request-Id, \d+
           filters:
             # 转发时去除system前缀
             - StripPrefix=1

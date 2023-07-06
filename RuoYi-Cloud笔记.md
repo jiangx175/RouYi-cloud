@@ -151,3 +151,70 @@ predicates:
     - Header=X-Request-Id, \d+
 ```
 
+### 3. 网关路由配置
+
+- 在`spring cloud gateway`中配置`uri`有三种方式，包括
+
+```yml
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: ruoyi-api
+          # 1.websocket配置方式
+          uri: ws://localhost:9090/
+          # 2.http地址配置方式
+          uri: http://localhost:9090/
+          # 3.注册中心配置方式
+          uri: lb://ruoyi-api
+          predicates:
+            - Path=/api/**
+```
+
+- 在微服务中，通常使用注册中心配置方式来配置网关路由
+
+  - 首先在网关模块中导入nacos依赖;
+
+  ```xml
+          <!-- SpringCloud Alibaba Nacos -->
+          <dependency>
+              <groupId>com.alibaba.cloud</groupId>
+              <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+          </dependency>
+  ```
+
+  - 修改配置文件：
+
+  ```yml
+  server:
+    port: 8081
+  
+  spring:
+    application:
+      name: test-gateway
+    cloud:
+      nacos:
+        discovery:
+          # 服务注册地址
+          server-addr: 127.0.0.1:8848
+      gateway:
+        routes:
+          # 系统模块
+          - id: ruoyi-system
+            # 将/system开头的请求都转发至localhost:9201(系统模块接口)中
+            # 1.http地址配置方式
+            # uri: http://localhost:9201/
+            # 2.注册中心配置方式
+            uri: lb://ruoyi-system
+            predicates:
+              - Path=/system/**
+            filters:
+              # 转发时去除system前缀
+              - StripPrefix=1
+  ```
+
+  - 重启服务，nacos服务注册中心可看见该服务注册成功，再测试网关是否转发成功
+  - **测试结果：使用http地址配置方式，请求能成功转发，但使用注册中心配置方式，请求始终提示服务不可达？？**
+
+  <img src="RuoYi-Cloud笔记.assets/image-20230706150621468.png" alt="image-20230706150621468" style="zoom:67%;" />
+
