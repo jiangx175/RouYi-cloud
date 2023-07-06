@@ -137,3 +137,17 @@ public class RuoYiGatewayApplication
 - 通过测试网关转发访问该接口：
 
 ![image-20230706100606246](RuoYi-Cloud笔记.assets/image-20230706100606246.png)
+
+### 2. 路由规则
+
+- http://doc.ruoyi.vip/ruoyi-cloud/cloud/gateway.html#%E8%B7%AF%E7%94%B1%E8%A7%84%E5%88%99
+
+```yml
+predicates:
+    - Path=/system/**
+    # 匹配日期时间之后发生的请求
+    - After=2023-07-06T10:23:00.000+08:00[Asia/Shanghai]
+    # 匹配具有指定名称的请求头，\d+值匹配正则表达式
+    - Header=X-Request-Id, \d+
+```
+
