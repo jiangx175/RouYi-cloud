@@ -71,3 +71,69 @@ npm run dev
 - 前端运行成功后，浏览器访问localhost，可以看到已启动的微服务能够正常访问，并且在nacos中也可以看到已经启动的微服务。
 
 ![image-20230705164925401](README.assets/image-20230705164925401.png)
+
+## 二、 SpringCloud Gateway服务网关
+
+### 1. 服务网关使用
+
+1. 添加依赖：
+
+```xml
+<!-- spring cloud gateway 依赖 -->
+<dependency>
+	<groupId>org.springframework.cloud</groupId>
+	<artifactId>spring-cloud-starter-gateway</artifactId>
+</dependency>
+```
+
+2. 编辑`resources/application.yml`配置文件
+
+```yml
+server:
+  port: 8081
+
+spring: 
+  application:
+    name: ruoyi-gateway
+  cloud:
+    gateway:
+      routes:
+        # 系统模块
+        - id: ruoyi-system
+          # 将/system开头的请求都转发至localhost:9201(系统模块接口)中
+          uri: http://localhost:9201/  
+          predicates:
+            - Path=/system/**
+          filters:
+            # 转发时去除system前缀
+            - StripPrefix=1
+```
+
+3. 编写网关测试启动类
+
+```java
+@SpringBootApplication
+public class RuoYiGatewayApplication
+{
+    public static void main(String[] args)
+    {
+        SpringApplication.run(RuoYiGatewayApplication.class, args);
+        System.out.println("(♥◠‿◠)ﾉﾞ  若依测试网关启动成功   ლ(´ڡ`ლ)ﾞ");
+    }
+}
+```
+
+4. 整体目录如下：
+
+![image-20230706100428282](RuoYi-Cloud笔记.assets/image-20230706100428282.png)
+
+4. 启动若依系统模块服务和以上网关测试服务
+5. 浏览器访问系统模块接口测试：
+
+- 直接访问系统模块服务接口：
+
+![image-20230706100524191](RuoYi-Cloud笔记.assets/image-20230706100524191.png)
+
+- 通过测试网关转发访问该接口：
+
+![image-20230706100606246](RuoYi-Cloud笔记.assets/image-20230706100606246.png)
