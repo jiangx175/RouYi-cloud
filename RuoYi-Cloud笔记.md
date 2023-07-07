@@ -350,3 +350,106 @@ public class GatewayConfig
 - 频繁访问测试：
 
 ![image-20230707163539524](RuoYi-Cloud笔记.assets/image-20230707163539524.png)
+
+2. Sentinel分组限流
+
+- 对`ruoyi-system`、`ruoyi-gen`分组限流配置
+
+- 修改网关配置文件：
+
+```yml
+spring:
+  cloud:
+    gateway:
+      routes:
+        # 系统模块
+        - id: ruoyi-system
+          uri: lb://ruoyi-system
+          predicates:
+            - Path=/system/**
+          filters:
+            - StripPrefix=1
+        # 代码生成
+        - id: ruoyi-gen
+          uri: lb://ruoyi-gen
+          predicates:
+            - Path=/code/**
+          filters:
+            - StripPrefix=1
+```
+
+- 限流规则配置类：
+
+```java
+@Configuration
+public class GatewayConfig
+{
+
+    @Bean
+    @Order(-1)
+    public GlobalFilter sentinelGatewayFilter()
+    {
+        return new SentinelGatewayFilter();
+    }
+
+    @PostConstruct
+    public void doInit()
+    {
+        // 加载网关限流规则
+        initGatewayRules();
+    }
+
+    /**
+     * 网关限流规则
+     */
+    private void initGatewayRules()
+    {
+        Set<GatewayFlowRule> rules = new HashSet<>();
+        rules.add(new GatewayFlowRule("system-api")
+                .setCount(3) // 限流阈值
+                .setIntervalSec(60)); // 统计时间窗口，单位是秒，默认是 1 秒
+        rules.add(new GatewayFlowRule("code-api")
+                .setCount(5) // 限流阈值
+                .setIntervalSec(60));
+        // 加载网关限流规则
+        GatewayRuleManager.loadRules(rules);
+        // 加载限流分组
+        initCustomizedApis();
+    }
+
+    /**
+     * 限流分组
+     */
+    private void initCustomizedApis()
+    {
+        Set<ApiDefinition> definitions = new HashSet<>();
+        // ruoyi-system 组
+        ApiDefinition api1 = new ApiDefinition("system-api").setPredicateItems(new HashSet<ApiPredicateItem>()
+        {
+            private static final long serialVersionUID = 1L;
+            {
+                // 匹配 /user 以及其子路径的所有请求
+                add(new ApiPathPredicateItem().setPattern("/system/user/**")
+                        .setMatchStrategy(SentinelGatewayConstants.URL_MATCH_STRATEGY_PREFIX));
+            }
+        });
+        // ruoyi-gen 组
+        ApiDefinition api2 = new ApiDefinition("code-api").setPredicateItems(new HashSet<ApiPredicateItem>()
+        {
+            private static final long serialVersionUID = 1L;
+            {
+                // 只匹配 /job/list
+                add(new ApiPathPredicateItem().setPattern("/code/gen/list"));
+            }
+        });
+        definitions.add(api1);
+        definitions.add(api2);
+        // 加载限流分组
+        GatewayApiDefinitionManager.loadApiDefinitions(definitions);
+    }
+}
+```
+
+- 访问测试：
+
+![image-20230707170028762](RuoYi-Cloud笔记.assets/image-20230707170028762.png)

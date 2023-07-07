@@ -29,3 +29,10 @@ spring:
           filters:
             # 转发时去除system前缀
             - StripPrefix=1
+        # 代码生成
+        - id: ruoyi-gen
+          uri: lb://ruoyi-gen
+          predicates:
+            - Path=/code/**
+          filters:
+            - StripPrefix=1
