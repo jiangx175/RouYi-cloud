@@ -453,3 +453,22 @@ public class GatewayConfig
 - 访问测试：
 
 ![image-20230707170028762](RuoYi-Cloud笔记.assets/image-20230707170028762.png)
+
+3. Sentinel自定义异常
+
+- yml配置
+
+```yml
+# Spring
+spring: 
+  cloud:
+    sentinel:
+      scg:
+        fallback:
+          mode: response
+          response-body: '{"code":403,"msg":"请求超过最大数，请稍后再试"}'
+```
+
+- 访问测试：
+
+![image-20230707171117948](RuoYi-Cloud笔记.assets/image-20230707171117948.png)
