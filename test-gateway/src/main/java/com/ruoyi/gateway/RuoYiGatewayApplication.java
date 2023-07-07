@@ -2,6 +2,7 @@ package com.ruoyi.gateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
 /**
  * @ClassName RuoYiGatewayApplication
@@ -10,7 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @Date 2023/7/5 17:20
  * @Version 1.0
  */
-@SpringBootApplication
+@SpringBootApplication(exclude= {DataSourceAutoConfiguration.class})
 public class RuoYiGatewayApplication
 {
     public static void main(String[] args)

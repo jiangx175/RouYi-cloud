@@ -217,6 +217,15 @@ spring:
   - **测试结果：使用http地址配置方式，请求能成功转发，但使用注册中心配置方式，请求始终提示服务不可达？？**
 
   <img src="RuoYi-Cloud笔记.assets/image-20230706150621468.png" alt="image-20230706150621468" style="zoom:67%;" />
+  
+  - 解决方案：lb配置未生效，需要引入相关的lb依赖：
+  
+  ```xml
+  <dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+  </dependency>
+  ```
 
 ### 4. 网关限流配置
 
@@ -279,3 +288,65 @@ spring:
 - 再次请求该接口：
 
 ![image-20230706170831769](RuoYi-Cloud笔记.assets/image-20230706170831769.png)
+
+### 7. Sentinel限流
+
+1. 实现Sentinel限流：
+
+- 添加依赖：
+
+```xml
+<!-- SpringCloud Alibaba Sentinel -->
+<dependency>
+	<groupId>com.alibaba.cloud</groupId>
+	<artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+</dependency>
+		
+<!-- SpringCloud Alibaba Sentinel Gateway -->
+<dependency>
+	<groupId>com.alibaba.cloud</groupId>
+	<artifactId>spring-cloud-alibaba-sentinel-gateway</artifactId>
+</dependency>
+```
+
+- 编写限流规则配置类
+
+```java
+@Configuration
+public class GatewayConfig
+{
+    @Bean
+    @Order(-1)
+    public GlobalFilter sentinelGatewayFilter()
+    {
+        return new SentinelGatewayFilter();
+    }
+
+    @PostConstruct
+    public void doInit()
+    {
+        // 加载网关限流规则
+        initGatewayRules();
+    }
+
+    /**
+     * 网关限流规则
+     */
+    private void initGatewayRules()
+    {
+        Set<GatewayFlowRule> rules = new HashSet<>();
+        /**
+         * ruoyi-system对应getway网关配置中的id
+         */
+        rules.add(new GatewayFlowRule("ruoyi-system")
+                .setCount(3) // 限流阈值
+                .setIntervalSec(60)); // 统计时间窗口，单位是秒，默认是 1 秒
+        // 加载网关限流规则
+        GatewayRuleManager.loadRules(rules);
+    }
+}
+```
+
+- 频繁访问测试：
+
+![image-20230707163539524](RuoYi-Cloud笔记.assets/image-20230707163539524.png)
