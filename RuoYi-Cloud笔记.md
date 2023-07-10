@@ -472,3 +472,88 @@ spring:
 - 访问测试：
 
 ![image-20230707171117948](RuoYi-Cloud笔记.assets/image-20230707171117948.png)
+
+## 三、配置中心
+
+### 1. 配置中心添加配置
+
+1. 添加依赖：
+
+```xml
+<!-- springcloud alibaba nacos config -->
+<dependency>
+    <groupId>com.alibaba.cloud</groupId>
+    <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+</dependency>
+```
+
+2. 在`bootstrap.yml`添加Nacos配置
+
+- **注意：一定是bootstrap.yml，application.yml亲测不行**，可能是因为bootstrap.ym优先级高。
+
+- ```yml
+      server:
+    port: 8081
+  
+  spring:
+    main:
+      allow-bean-definition-overriding: true
+    application:
+      # 应用名称
+      name: test-gateway
+    profiles:
+      # 环境配置
+      active: dev
+    cloud:
+      nacos:
+        discovery:
+          # 服务注册地址
+          server-addr: 127.0.0.1:8848
+        config:
+          # 配置中心地址
+          server-addr: 127.0.0.1:8848
+          # 配置文件格式
+          file-extension: yml
+          # 共享配置
+          shared-configs:
+            - application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
+  ```
+
+3. 配置中心新增配置文件
+
+- 新建配置如下：
+
+![image-20230710140903697](RuoYi-Cloud笔记.assets/image-20230710140903697.png)
+
+- **注意：Data ID命名规则：微服务应用名称+环境配置(dev)+文件后缀(yml)**，配置文件命名必须符合规范，否则可能识别不到。
+
+4. 编写测试接口读取配置中心文件，进行测试
+
+- 编写接口：
+
+```java
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class TestController
+{
+    @Value("${ruoyi.name}")
+    private String name;
+
+    @Value("${ruoyi.version}")
+    private String version;
+
+    @GetMapping("info")
+    public String get()
+    {
+        return name + version;
+    }
+}
+```
+
+- 浏览器测试：
+
+![image-20230710141725692](RuoYi-Cloud笔记.assets/image-20230710141725692.png)
+

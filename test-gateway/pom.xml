@@ -46,6 +46,18 @@
             <artifactId>spring-cloud-alibaba-sentinel-gateway</artifactId>
         </dependency>
 
+        <!-- springcloud alibaba nacos config -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+
+        <!-- SpringBoot Web -->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-web</artifactId>-->
+<!--        </dependency>-->
+
 <!--        <dependency>-->
 <!--            <groupId>com.ruoyi</groupId>-->
 <!--            <artifactId>ruoyi-gateway</artifactId>-->
